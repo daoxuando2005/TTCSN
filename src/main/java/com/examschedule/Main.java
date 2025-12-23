@@ -18,7 +18,7 @@ public class Main {
         System.out.println("========== EXAM SCHEDULING WITH ACO ==========\n");
         
         // Bước 1: Xác định bộ test (Chỉ cần đổi số này để chạy bộ khác)
-        int testNumber =10;
+        int testNumber = 9;
         String inputFileName = "test_inputs/input_test" + testNumber + ".json";
         String outputFileName = "test_outputs/output_test" + testNumber + ".json";
 

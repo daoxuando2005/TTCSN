@@ -1,0 +1,47 @@
+{
+  "schedule": [
+    {
+      "exam": "E1",
+      "timeslot": "Monday_08:00",
+      "students": 25,
+      "room": "R3"
+    },
+    {
+      "exam": "E1",
+      "timeslot": "Monday_08:00",
+      "students": 25,
+      "room": "R5"
+    },
+    {
+      "exam": "E3",
+      "timeslot": "Monday_08:00",
+      "students": 25,
+      "room": "R2"
+    },
+    {
+      "exam": "E3",
+      "timeslot": "Monday_08:00",
+      "students": 22,
+      "room": "R4"
+    },
+    {
+      "exam": "E2",
+      "timeslot": "Monday_08:00",
+      "students": 20,
+      "room": "R1"
+    },
+    {
+      "exam": "E4",
+      "timeslot": "Monday_10:00",
+      "students": 25,
+      "room": "R3"
+    },
+    {
+      "exam": "E4",
+      "timeslot": "Monday_10:00",
+      "students": 25,
+      "room": "R5"
+    }
+  ],
+  "fitness": 0
+}
