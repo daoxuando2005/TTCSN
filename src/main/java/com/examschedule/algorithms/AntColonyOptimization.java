@@ -6,32 +6,32 @@ import com.examschedule.utils.ExamSplitter;
 import java.util.*;
 
 /**
- * Ant Colony Optimization algorithm for exam scheduling.
+ * Thuật toán Ant Colony Optimization (ACO) cho bài toán lập lịch thi.
  */
 public class AntColonyOptimization {
     private ScheduleData data;
     private ScheduleFitness fitness;
     private Random random;
 
-    // ACO parameters
+    // Các tham số của ACO
     private int numAnts;
     private int maxIterations;
-    private double alpha;      // Pheromone influence
-    private double beta;       // Heuristic influence
-    private double evaporation; // Pheromone evaporation rate
+    private double alpha;       // Mức độ ảnh hưởng của pheromone
+    private double beta;        // Mức độ ảnh hưởng của heuristic
+    private double evaporation; // Tỷ lệ bay hơi pheromone
     private double pheromoneDeposit;
 
-    // Pheromone matrix: τ[exam_index][timeslot_index][room_index]
+    // Ma trận pheromone: τ[exam_index][timeslot_index][room_index]
     private double[][][] pheromone;
 
-    // Heuristic matrix: η[exam_index][timeslot_index][room_index]
+    // Ma trận heuristic: η[exam_index][timeslot_index][room_index]
     private double[][][] heuristic;
 
     private List<Assignment> bestSchedule;
     private double bestFitness;
 
     /**
-     * Initializes ACO solver.
+     * Khởi tạo bộ giải ACO.
      */
     public AntColonyOptimization(ScheduleData data, int numAnts, int maxIterations) {
         this.data = data;
@@ -40,7 +40,7 @@ public class AntColonyOptimization {
         this.numAnts = numAnts;
         this.maxIterations = maxIterations;
 
-        // ACO parameters
+        // Các tham số ACO
         this.alpha = 0.5;
         this.beta = 1;
         this.evaporation = 1;
@@ -53,7 +53,7 @@ public class AntColonyOptimization {
     }
 
     /**
-     * Initializes pheromone and heuristic matrices.
+     * Khởi tạo ma trận pheromone và heuristic.
      */
     private void initializeMatrices() {
         int numExams = data.getExams().size();
@@ -63,7 +63,7 @@ public class AntColonyOptimization {
         pheromone = new double[numExams][numTimeslots][numRooms];
         heuristic = new double[numExams][numTimeslots][numRooms];
 
-        // Initialize pheromone with small value
+        // Khởi tạo pheromone với giá trị nhỏ ban đầu
         for (int i = 0; i < numExams; i++) {
             for (int j = 0; j < numTimeslots; j++) {
                 for (int k = 0; k < numRooms; k++) {
@@ -71,14 +71,16 @@ public class AntColonyOptimization {
                     Exam exam = data.getExams().get(i);
                     Room room = data.getRooms().get(k);
                     
-                    double timeslotPreference = (double)(numTimeslots - j) / numTimeslots * 2.0;
+                    double timeslotPreference =
+                            (double)(numTimeslots - j) / numTimeslots * 2.0;
                     
                     if (exam.getStudentCount() <= room.getCapacity()) {
-                        // Better heuristic for better-fit rooms
-                        double utilization = (double) exam.getStudentCount() / room.getCapacity();
+                        // Heuristic tốt hơn cho các phòng phù hợp
+                        double utilization =
+                                (double) exam.getStudentCount() / room.getCapacity();
                         heuristic[i][j][k] = utilization * timeslotPreference;
                     } else {
-                        heuristic[i][j][k] = 0.0; // Invalid option
+                        heuristic[i][j][k] = 0.0; // Phương án không hợp lệ
                     }
                 }
             }
@@ -87,15 +89,16 @@ public class AntColonyOptimization {
     }
 
     /**
-     * Runs the ACO algorithm.
+     * Thực thi thuật toán ACO.
      */
     public ScheduleOutput solve() {
-        System.out.println("[ACO] Starting optimization with " + numAnts + " ants, " + maxIterations + " iterations");
+        System.out.println("[ACO] Starting optimization with " + numAnts +
+                " ants, " + maxIterations + " iterations");
 
         for (int iteration = 0; iteration < maxIterations; iteration++) {
             List<List<Assignment>> antSolutions = new ArrayList<>();
 
-            // Each ant constructs a solution
+            // Mỗi con kiến xây dựng một lời giải
             for (int ant = 0; ant < numAnts; ant++) {
                 List<Assignment> schedule = constructSchedule();
                 antSolutions.add(schedule);
@@ -107,11 +110,12 @@ public class AntColonyOptimization {
                 }
             }
 
-            // Update pheromone
+            // Cập nhật pheromone
             updatePheromone(antSolutions);
 
             if ((iteration + 1) % 10 == 0) {
-                System.out.println("[ACO] Iteration " + (iteration + 1) + "/" + maxIterations + " - Best fitness: " + bestFitness);
+                System.out.println("[ACO] Iteration " + (iteration + 1) + "/" +
+                        maxIterations + " - Best fitness: " + bestFitness);
             }
         }
 
@@ -120,8 +124,10 @@ public class AntColonyOptimization {
     }
 
     /**
-     * Constructs a schedule for one ant using roulette wheel selection with exam splitting.
-     * Modified to track room usage per timeslot and prevent room conflicts
+     * Xây dựng lịch thi cho một con kiến bằng phương pháp roulette,
+     * có hỗ trợ chia môn thi.
+     * Được chỉnh sửa để theo dõi việc sử dụng phòng theo từng ca
+     * và tránh xung đột phòng.
      */
     private List<Assignment> constructSchedule() {
         List<Assignment> schedule = new ArrayList<>();
@@ -145,9 +151,11 @@ public class AntColonyOptimization {
             
             Room selectedRoom = data.getRooms().get(assignment[1]);
             if (exam.getStudentCount() <= selectedRoom.getCapacity()) {
-                // Fits in single room
-                schedule.add(new Assignment(exam.getId(), timeslot, selectedRoom.getId(), exam.getStudentCount()));
-                usedRoomsPerTimeslot.get(timeslot).add(selectedRoom.getId());
+                // Môn thi phù hợp với một phòng duy nhất
+                schedule.add(new Assignment(exam.getId(), timeslot,
+                        selectedRoom.getId(), exam.getStudentCount()));
+                usedRoomsPerTimeslot.get(timeslot)
+                        .add(selectedRoom.getId());
             } else {
                 Set<String> usedRooms = usedRoomsPerTimeslot.get(timeslot);
                 List<Room> availableRooms = new ArrayList<>();
@@ -158,9 +166,10 @@ public class AntColonyOptimization {
                 }
                 
                 if (availableRooms.isEmpty()) {
-                    // Find a timeslot with available rooms
+                    // Tìm ca thi khác còn phòng trống
                     for (String alternateTimeslot : data.getTimeslots()) {
-                        Set<String> altUsedRooms = usedRoomsPerTimeslot.get(alternateTimeslot);
+                        Set<String> altUsedRooms =
+                                usedRoomsPerTimeslot.get(alternateTimeslot);
                         availableRooms.clear();
                         for (Room room : data.getRooms()) {
                             if (!altUsedRooms.contains(room.getId())) {
@@ -175,10 +184,13 @@ public class AntColonyOptimization {
                 }
                 
                 if (!availableRooms.isEmpty()) {
-                    List<Assignment> splitAssignments = ExamSplitter.splitExamIntoRooms(exam, timeslot, availableRooms);
+                    List<Assignment> splitAssignments =
+                            ExamSplitter.splitExamIntoRooms(
+                                    exam, timeslot, availableRooms);
                     schedule.addAll(splitAssignments);
                     for (Assignment assign : splitAssignments) {
-                        usedRoomsPerTimeslot.get(timeslot).add(assign.getRoom());
+                        usedRoomsPerTimeslot.get(timeslot)
+                                .add(assign.getRoom());
                     }
                 } 
             }
@@ -188,10 +200,13 @@ public class AntColonyOptimization {
     }
 
     /**
-     * Selects timeslot and room using roulette wheel selection.
-     * Modified to avoid rooms that are already used in a timeslot
+     * Chọn ca thi và phòng bằng phương pháp roulette wheel.
+     * Được chỉnh sửa để tránh các phòng đã được sử dụng
+     * trong cùng một ca thi.
      */
-    private int[] selectAssignment(int examIdx, Map<String, Set<String>> usedRoomsPerTimeslot) {
+    private int[] selectAssignment(int examIdx,
+            Map<String, Set<String>> usedRoomsPerTimeslot) {
+
         int numTimeslots = data.getTimeslots().size();
         int numRooms = data.getRooms().size();
         Exam exam = data.getExams().get(examIdx);
@@ -206,14 +221,20 @@ public class AntColonyOptimization {
             for (int r = 0; r < numRooms; r++) {
                 Room room = data.getRooms().get(r);
                 
-                if (!usedRooms.contains(room.getId()) && exam.getStudentCount() <= room.getCapacity()) {
+                if (!usedRooms.contains(room.getId())
+                        && exam.getStudentCount() <= room.getCapacity()) {
+
                     int idx = t * numRooms + r;
-                    double pheromoneValue = Math.pow(pheromone[examIdx][t][r], alpha);
-                    double heuristicValue = Math.pow(heuristic[examIdx][t][r], beta);
+                    double pheromoneValue =
+                            Math.pow(pheromone[examIdx][t][r], alpha);
+                    double heuristicValue =
+                            Math.pow(heuristic[examIdx][t][r], beta);
                     
-                    double timeslotBias = Math.pow(10.0, numTimeslots - t);
+                    double timeslotBias =
+                            Math.pow(10.0, numTimeslots - t);
                     
-                    probabilities[idx] = pheromoneValue * heuristicValue * timeslotBias;
+                    probabilities[idx] =
+                            pheromoneValue * heuristicValue * timeslotBias;
                     totalProbability += probabilities[idx];
                 } else {
                     probabilities[t * numRooms + r] = 0;
@@ -221,9 +242,8 @@ public class AntColonyOptimization {
             }
         }
 
-        // If no valid assignments found, find any available room in any timeslot
+        // Nếu không tồn tại phương án hợp lệ, tìm phòng trống bất kỳ
         if (totalProbability == 0) {
-            
             for (int t = 0; t < numTimeslots; t++) {
                 String timeslot = data.getTimeslots().get(t);
                 Set<String> usedRooms = usedRoomsPerTimeslot.get(timeslot);
@@ -236,12 +256,12 @@ public class AntColonyOptimization {
                 }
             }
             
-            // Last resort: return random available room
+            // Trường hợp cuối cùng: chọn ngẫu nhiên
             System.out.println("[WARNING] All rooms busy, returning first available");
             return new int[]{0, 0};
         }
 
-        // Roulette wheel selection
+        // Thực hiện chọn theo roulette wheel
         double spin = random.nextDouble() * totalProbability;
         double accumulated = 0;
         for (int i = 0; i < probabilities.length; i++) {
@@ -251,14 +271,16 @@ public class AntColonyOptimization {
             }
         }
 
-        return new int[]{random.nextInt(numTimeslots), random.nextInt(numRooms)};
+        return new int[]{random.nextInt(numTimeslots),
+                         random.nextInt(numRooms)};
     }
 
     /**
-     * Updates pheromone based on ant solutions (evaporation + deposition).
+     * Cập nhật pheromone dựa trên các lời giải của đàn kiến
+     * (bao gồm bay hơi và bồi đắp pheromone).
      */
     private void updatePheromone(List<List<Assignment>> antSolutions) {
-        // Evaporation
+        // Bay hơi pheromone
         int numExams = data.getExams().size();
         int numTimeslots = data.getTimeslots().size();
         int numRooms = data.getRooms().size();
@@ -271,29 +293,32 @@ public class AntColonyOptimization {
             }
         }
 
-        // Pheromone deposition from best solutions
+        // Bồi đắp pheromone từ các lời giải tốt
         for (List<Assignment> solution : antSolutions) {
             double solutionFitness = fitness.calculateFitness(solution);
-            // Only deposit pheromone for good solutions
+            // Chỉ bồi đắp pheromone cho các lời giải đủ tốt
             if (solutionFitness < bestFitness * 1.5) {
-                depositPheromone(solution, 1.0 / (1 + solutionFitness));
+                depositPheromone(solution,
+                        1.0 / (1 + solutionFitness));
             }
         }
     }
 
     /**
-     * Deposits pheromone for a solution.
+     * Bồi đắp pheromone cho một lời giải cụ thể.
      */
     private void depositPheromone(List<Assignment> solution, double amount) {
         for (Assignment assignment : solution) {
             Exam exam = data.getExamById(assignment.getExamId());
             int examIdx = data.getExams().indexOf(exam);
-            int timeslotIdx = data.getTimeslots().indexOf(assignment.getTimeslot());
+            int timeslotIdx =
+                    data.getTimeslots().indexOf(assignment.getTimeslot());
             Room room = data.getRoomById(assignment.getRoom());
             int roomIdx = data.getRooms().indexOf(room);
 
             if (examIdx >= 0 && timeslotIdx >= 0 && roomIdx >= 0) {
-                pheromone[examIdx][timeslotIdx][roomIdx] += amount * pheromoneDeposit;
+                pheromone[examIdx][timeslotIdx][roomIdx]
+                        += amount * pheromoneDeposit;
             }
         }
     }

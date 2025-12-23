@@ -3,16 +3,15 @@ package com.examschedule.utils;
 import com.examschedule.models.*;
 import java.util.*;
 
-
 /**
- * Evaluates the fitness (quality) of an exam schedule.
- * Lower fitness scores are better.
+ * Đánh giá độ phù hợp (fitness) của một lịch thi.
+ * Giá trị fitness càng thấp thì lịch thi càng tốt.
  */
 public class ScheduleFitness {
     private ScheduleData data;
     private List<Assignment> assignments;
 
-    // Penalty weights
+    // Trọng số phạt
     private static final int CAPACITY_VIOLATION_PENALTY = 1000;
     private static final int STUDENT_CONFLICT_PENALTY = 500;
     private static final int UNASSIGNED_EXAM_PENALTY = 100;
@@ -23,23 +22,24 @@ public class ScheduleFitness {
     }
 
     /**
-     * Calculates the fitness score for a given schedule.
-     * @param assignments List of exam assignments
-     * @return Fitness score (lower is better)
+     * Tính toán điểm fitness cho một lịch thi cho trước.
+     * @param assignments Danh sách các phân công môn thi
+     * @return Giá trị fitness (càng nhỏ càng tốt)
      */
     public double calculateFitness(List<Assignment> assignments) {
         this.assignments = assignments;
         double fitness = 0;
 
-        // Penalty for capacity violations
+        // Phạt vi phạm sức chứa phòng
         fitness += checkCapacityViolations();
 
-        // Penalty for student conflicts (same student in multiple exams at same timeslot)
+        // Phạt xung đột sinh viên (một sinh viên thi nhiều môn cùng ca)
         fitness += checkStudentConflicts();
 
-        // Penalty for unassigned exams
+        // Phạt các môn chưa được xếp lịch
         fitness += checkUnassignedExams();
 
+        // Phạt xung đột phòng thi
         fitness += checkRoomConflicts();
 
         fitness -= getTimeslotsUsed(assignments) * 10;
@@ -49,21 +49,22 @@ public class ScheduleFitness {
     }
 
     /**
-     * Checks if room capacity is violated.
+     * Kiểm tra vi phạm sức chứa phòng thi.
      */
     private double checkCapacityViolations() {
         double penalty = 0;
         for (Assignment assignment : assignments) {
             Room room = data.getRoomById(assignment.getRoom());
             if (room != null && assignment.getStudentCount() > room.getCapacity()) {
-                penalty += CAPACITY_VIOLATION_PENALTY * (assignment.getStudentCount() - room.getCapacity());
+                penalty += CAPACITY_VIOLATION_PENALTY *
+                        (assignment.getStudentCount() - room.getCapacity());
             }
         }
         return penalty;
     }
 
     /**
-     * Checks for student scheduling conflicts.
+     * Kiểm tra xung đột lịch thi của sinh viên.
      */
     private double checkStudentConflicts() {
         double penalty = 0;
@@ -75,21 +76,25 @@ public class ScheduleFitness {
             if (exam != null) {
                 for (String studentId : exam.getStudents()) {
                     String key = studentId + "_" + timeslot;
-                    studentTimeslots.computeIfAbsent(key, k -> new HashSet<>()).add(exam.getId());
+                    studentTimeslots
+                            .computeIfAbsent(key, k -> new HashSet<>())
+                            .add(exam.getId());
                 }
             }
         }
 
         for (Set<String> examsInSlot : studentTimeslots.values()) {
             if (examsInSlot.size() > 1) {
-                penalty += STUDENT_CONFLICT_PENALTY * (examsInSlot.size() - 1);
+                penalty += STUDENT_CONFLICT_PENALTY *
+                        (examsInSlot.size() - 1);
             }
         }
         return penalty;
     }
 
     /**
-     * Checks for room conflicts (same room used multiple times in same timeslot).
+     * Kiểm tra xung đột phòng thi
+     * (một phòng được sử dụng nhiều lần trong cùng một ca thi).
      */
     private double checkRoomConflicts() {
         double penalty = 0;
@@ -97,22 +102,26 @@ public class ScheduleFitness {
 
         for (Assignment assignment : assignments) {
             String key = assignment.getTimeslot() + "_" + assignment.getRoom();
-            roomTimeslotUsage.computeIfAbsent(key, k -> new ArrayList<>()).add(assignment.getExamId());
+            roomTimeslotUsage
+                    .computeIfAbsent(key, k -> new ArrayList<>())
+                    .add(assignment.getExamId());
         }
 
         for (Map.Entry<String, List<String>> entry : roomTimeslotUsage.entrySet()) {
             if (entry.getValue().size() > 1) {
-                // Heavy penalty for room conflicts
-                penalty += ROOM_CONFLICT_PENALTY * (entry.getValue().size() - 1);
-                System.out.println("[WARNING] Room conflict detected: " + entry.getKey() + 
-                                 " used by exams: " + entry.getValue());
+                // Phạt nặng khi xảy ra xung đột phòng
+                penalty += ROOM_CONFLICT_PENALTY *
+                        (entry.getValue().size() - 1);
+                System.out.println("[WARNING] Room conflict detected: " +
+                        entry.getKey() + " used by exams: " +
+                        entry.getValue());
             }
         }
         return penalty;
     }
 
     /**
-     * Checks for unassigned exams.
+     * Kiểm tra các môn thi chưa được xếp lịch.
      */
     private double checkUnassignedExams() {
         Set<String> assignedExams = new HashSet<>();
@@ -130,7 +139,7 @@ public class ScheduleFitness {
     }
 
     /**
-     * Gets the number of timeslots used.
+     * Lấy số lượng ca thi đã được sử dụng.
      */
     private int getTimeslotsUsed() {
         Set<String> usedTimeslots = new HashSet<>();
@@ -141,7 +150,7 @@ public class ScheduleFitness {
     }
 
     /**
-     * Gets the number of timeslots used from a given assignment list.
+     * Lấy số lượng ca thi đã sử dụng từ danh sách phân công cho trước.
      */
     private int getTimeslotsUsed(List<Assignment> assignmentList) {
         Set<String> usedTimeslots = new HashSet<>();
@@ -152,33 +161,36 @@ public class ScheduleFitness {
     }
 
     /**
-     * Calculates penalty for inefficient timeslot usage
-     * Penalizes using later timeslots when earlier ones have free rooms
+     * Tính mức phạt cho việc sử dụng ca thi không hiệu quả.
+     * Phạt khi sử dụng ca thi muộn trong khi các ca sớm vẫn còn phòng trống.
      */
     private double calculateTimeslotEfficiencyPenalty(List<Assignment> assignments) {
         double penalty = 0;
         int numTimeslots = data.getTimeslots().size();
         int numRooms = data.getRooms().size();
         
-        // Count assignments per timeslot
+        // Đếm số lượng phân công theo từng ca thi
         Map<String, Integer> timeslotCounts = new HashMap<>();
         for (Assignment assignment : assignments) {
-            timeslotCounts.merge(assignment.getTimeslot(), 1, Integer::sum);
+            timeslotCounts.merge(
+                    assignment.getTimeslot(), 1, Integer::sum);
         }
         
-        // Check if later timeslots are used when earlier ones are not full
+        // Kiểm tra việc sử dụng ca muộn khi ca sớm chưa đầy
         List<String> timeslots = data.getTimeslots();
         for (int i = 0; i < timeslots.size(); i++) {
             String currentTimeslot = timeslots.get(i);
-            int currentCount = timeslotCounts.getOrDefault(currentTimeslot, 0);
+            int currentCount =
+                    timeslotCounts.getOrDefault(currentTimeslot, 0);
             
-            // If this timeslot is not full but later timeslots are used, penalize heavily
+            // Nếu ca hiện tại chưa đầy nhưng ca sau đã được dùng thì phạt nặng
             if (currentCount < numRooms) {
                 for (int j = i + 1; j < timeslots.size(); j++) {
                     String laterTimeslot = timeslots.get(j);
-                    int laterCount = timeslotCounts.getOrDefault(laterTimeslot, 0);
+                    int laterCount =
+                            timeslotCounts.getOrDefault(laterTimeslot, 0);
                     if (laterCount > 0) {
-                        // Heavy penalty for skipping to later timeslots
+                        // Phạt nặng việc bỏ qua ca sớm để dùng ca muộn
                         penalty += 200 * laterCount * (j - i);
                     }
                 }
@@ -189,28 +201,36 @@ public class ScheduleFitness {
     }
 
     /**
-     * Prints detailed schedule analysis.
+     * In ra phân tích chi tiết của lịch thi.
      */
     public void printScheduleAnalysis(List<Assignment> assignments, double fitness) {
         System.out.println("\n========== SCHEDULE ANALYSIS ==========");
         System.out.println("Total Fitness Score: " + fitness);
-        System.out.println("Assignments: " + assignments.size() + " / " + data.getExams().size());
-        System.out.println("Timeslots Used: " + getTimeslotsUsed(assignments) + " / " + data.getTimeslots().size());
+        System.out.println("Assignments: " + assignments.size() +
+                " / " + data.getExams().size());
+        System.out.println("Timeslots Used: " +
+                getTimeslotsUsed(assignments) +
+                " / " + data.getTimeslots().size());
 
         Map<String, Integer> timeslotLoad = new HashMap<>();
         for (Assignment assignment : assignments) {
-            timeslotLoad.merge(assignment.getTimeslot(), 1, Integer::sum);
+            timeslotLoad.merge(
+                    assignment.getTimeslot(), 1, Integer::sum);
         }
         System.out.println("Timeslot Distribution: " + timeslotLoad);
         
         Map<String, List<String>> roomTimeslotUsage = new HashMap<>();
         for (Assignment assignment : assignments) {
-            String key = assignment.getTimeslot() + "_" + assignment.getRoom();
-            roomTimeslotUsage.computeIfAbsent(key, k -> new ArrayList<>()).add(assignment.getExamId());
+            String key =
+                    assignment.getTimeslot() + "_" + assignment.getRoom();
+            roomTimeslotUsage
+                    .computeIfAbsent(key, k -> new ArrayList<>())
+                    .add(assignment.getExamId());
         }
         
         int conflictCount = 0;
-        for (Map.Entry<String, List<String>> entry : roomTimeslotUsage.entrySet()) {
+        for (Map.Entry<String, List<String>> entry :
+                roomTimeslotUsage.entrySet()) {
             if (entry.getValue().size() > 1) {
                 conflictCount++;
             }

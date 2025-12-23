@@ -1,0 +1,185 @@
+{
+  "schedule": [
+    {
+      "exam": "E3",
+      "timeslot": "Monday_16:00",
+      "students": 31,
+      "room": "R2"
+    },
+    {
+      "exam": "E2",
+      "timeslot": "Monday_16:00",
+      "students": 29,
+      "room": "R6"
+    },
+    {
+      "exam": "E16",
+      "timeslot": "Monday_10:00",
+      "students": 28,
+      "room": "R7"
+    },
+    {
+      "exam": "E19",
+      "timeslot": "Monday_08:00",
+      "students": 28,
+      "room": "R2"
+    },
+    {
+      "exam": "E9",
+      "timeslot": "Monday_08:00",
+      "students": 30,
+      "room": "R1"
+    },
+    {
+      "exam": "E27",
+      "timeslot": "Monday_14:00",
+      "students": 26,
+      "room": "R1"
+    },
+    {
+      "exam": "E24",
+      "timeslot": "Monday_16:00",
+      "students": 27,
+      "room": "R3"
+    },
+    {
+      "exam": "E6",
+      "timeslot": "Monday_14:00",
+      "students": 30,
+      "room": "R4"
+    },
+    {
+      "exam": "E11",
+      "timeslot": "Monday_10:00",
+      "students": 29,
+      "room": "R3"
+    },
+    {
+      "exam": "E28",
+      "timeslot": "Monday_10:00",
+      "students": 26,
+      "room": "R6"
+    },
+    {
+      "exam": "E25",
+      "timeslot": "Monday_08:00",
+      "students": 27,
+      "room": "R6"
+    },
+    {
+      "exam": "E18",
+      "timeslot": "Monday_14:00",
+      "students": 28,
+      "room": "R5"
+    },
+    {
+      "exam": "E20",
+      "timeslot": "Monday_08:00",
+      "students": 28,
+      "room": "R5"
+    },
+    {
+      "exam": "E14",
+      "timeslot": "Monday_14:00",
+      "students": 29,
+      "room": "R3"
+    },
+    {
+      "exam": "E22",
+      "timeslot": "Monday_10:00",
+      "students": 27,
+      "room": "R1"
+    },
+    {
+      "exam": "E7",
+      "timeslot": "Monday_14:00",
+      "students": 30,
+      "room": "R6"
+    },
+    {
+      "exam": "E26",
+      "timeslot": "Tuesday_08:00",
+      "students": 27,
+      "room": "R1"
+    },
+    {
+      "exam": "E4",
+      "timeslot": "Monday_08:00",
+      "students": 31,
+      "room": "R3"
+    },
+    {
+      "exam": "E13",
+      "timeslot": "Monday_14:00",
+      "students": 29,
+      "room": "R7"
+    },
+    {
+      "exam": "E8",
+      "timeslot": "Monday_08:00",
+      "students": 30,
+      "room": "R7"
+    },
+    {
+      "exam": "E23",
+      "timeslot": "Monday_10:00",
+      "students": 27,
+      "room": "R4"
+    },
+    {
+      "exam": "E15",
+      "timeslot": "Monday_08:00",
+      "students": 29,
+      "room": "R4"
+    },
+    {
+      "exam": "E5",
+      "timeslot": "Monday_08:00",
+      "students": 25,
+      "room": "R8"
+    },
+    {
+      "exam": "E21",
+      "timeslot": "Monday_16:00",
+      "students": 27,
+      "room": "R1"
+    },
+    {
+      "exam": "E10",
+      "timeslot": "Monday_14:00",
+      "students": 30,
+      "room": "R2"
+    },
+    {
+      "exam": "E17",
+      "timeslot": "Monday_10:00",
+      "students": 28,
+      "room": "R2"
+    },
+    {
+      "exam": "E12",
+      "timeslot": "Monday_10:00",
+      "students": 29,
+      "room": "R5"
+    },
+    {
+      "exam": "E1",
+      "timeslot": "Monday_10:00",
+      "students": 25,
+      "room": "R8"
+    },
+    {
+      "exam": "E29",
+      "timeslot": "Monday_16:00",
+      "students": 26,
+      "room": "R5"
+    },
+    {
+      "exam": "E30",
+      "timeslot": "Monday_14:00",
+      "students": 25,
+      "room": "R8"
+    }
+  ],
+  "fitness": 2150
+}
