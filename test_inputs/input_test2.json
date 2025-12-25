@@ -398,21 +398,17 @@
     { "id": "S200" }
   ],
   "rooms": [
-    { "id": "R1", "capacity": 20 },
-    { "id": "R2", "capacity": 25 },
-    { "id": "R3", "capacity": 30 },
-    { "id": "R4", "capacity": 22 },
-    { "id": "R5", "capacity": 28 }
+    { "id": "R1", "capacity": 60 },
+    { "id": "R2", "capacity": 55 },
+    { "id": "R3", "capacity": 58 },
+    { "id": "R4", "capacity": 62 },
+    { "id": "R5", "capacity": 60 }
   ],
   "timeslots": [
     "Monday_08:00",
     "Monday_10:00",
     "Monday_14:00",
     "Monday_16:00",
-    "Tuesday_08:00",
-    "Tuesday_10:00",
-    "Tuesday_14:00",
-    "Tuesday_16:00",
-    "Wednesday_08:00"
+    "Tuesday_08:00"
   ]
 }

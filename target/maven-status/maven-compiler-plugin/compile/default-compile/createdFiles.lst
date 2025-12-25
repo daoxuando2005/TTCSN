@@ -1,3 +1,12 @@
-com\examschedule\utils\SchedulePrinter.class
 Main.class
+com\examschedule\models\ScheduleOutput.class
+com\examschedule\utils\ScheduleFitness.class
+com\examschedule\models\Student.class
+com\examschedule\utils\DataLoader.class
+com\examschedule\algorithms\AntColonyOptimization.class
+com\examschedule\models\Assignment.class
+com\examschedule\utils\SchedulePrinter.class
+com\examschedule\models\Room.class
+com\examschedule\models\ScheduleData.class
 com\examschedule\utils\ExamSplitter.class
+com\examschedule\models\Exam.class
